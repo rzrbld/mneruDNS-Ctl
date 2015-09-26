@@ -12,7 +12,18 @@ mneruDNS-Ctl uses a number of open source projects to work properly:
 * [curl] - curl is an open source command line tool and library for transferring data with URL syntax
 * [jq] - jq is a lightweight and flexible command-line JSON processor.
 
+### Configuring
+change mne.ru login and password to your credentials
+```sh
+$ vim mnerudnsctl.sh
+...
+#mne.ru credentials you need to change this!
+email='myemail@mydomain.ru'
+passwd='myS3cr#tP4$w0rd!'
+...
+```
 ### Usage
+During use curl creates a temporary file (by default cookies.txt, you able to change name and file location by editing #init section in ./mnerudnsctl.sh) in the same directory as the ./mnerudnsctl.sh, make sure that the user who runs ./mnerudnsctl.sh can create files in the current directory.
 ```sh
 $ ./mnerudnsctl.sh list
 mydomain1.ru
