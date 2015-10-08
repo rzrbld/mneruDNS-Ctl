@@ -1,11 +1,39 @@
 # mneruDNS-Ctl
 
-mneruDNS-Ctl is a bash script, you may use it for control your domain zone, that resolves on mne.ru NS servers. You be able to add\remove\list with A,CNAME and other types, from your console
+mneruDNS-Ctl is a bash script or Golang program, you can use it for control your domain zone, that resolves on mne.ru NS servers. You be able to add\remove\list with A,CNAME and other types, from your console
 
 ### Version
 0.0.1
 
 ### Tech
+
+There is two version of this app, one written on bash, other written on [Golang].
+
+## About Golang version
+
+### Configuring
+change mne.ru login and password to your credentials
+```sh
+$ vim mnerudnsctl.go
+...
+#mne.ru credentials you need to change this!
+username string = "myemail@mydomain.ru"
+password string = "myS3cr#tP4$w0rd!"
+...
+```
+compile
+```sh
+$ go version
+go version go1.5.1
+$ go build mnerudnsctl.go
+```
+use
+```sh
+$ mnerudnsctl help
+```
+
+
+## About Bash version
 
 mneruDNS-Ctl uses a number of open source projects to work properly:
 
@@ -22,7 +50,8 @@ email='myemail@mydomain.ru'
 passwd='myS3cr#tP4$w0rd!'
 ...
 ```
-### Usage
+## Usage
+Keep in mind if you choose to use Golang version, then you need command mnerudnsctl (mnerudnsctl.exe) instead of mnerudnsctl.sh.
 During use curl creates a temporary file (by default cookies.txt, you able to change name and file location by editing #init section in ./mnerudnsctl.sh) in the same directory as the ./mnerudnsctl.sh, make sure that the user who runs ./mnerudnsctl.sh can create files in the current directory.
 ```sh
 $ ./mnerudnsctl.sh list
@@ -73,6 +102,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
    [curl]: <http://curl.haxx.se/>
    [jq]: <https://stedolan.github.io/jq/>
+   [Golang]: <https://golang.org>
 
 
 
