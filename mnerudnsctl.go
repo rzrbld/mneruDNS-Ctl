@@ -1,7 +1,10 @@
 // dns ctl for mne.ru
 // License: MIT
 // Version: 0.0.2
-// Author: rzrbld (Aleksandr Petruhin) https://github.com/rzrbld razblade@gmail.com
+// Authors:
+// Aleksandr Petruhin https://github.com/rzrbld razblade@gmail.com
+// Max Nikolenko https://github.com/mephist
+
 package main
 
 import (
@@ -127,7 +130,7 @@ func usage() {
 	fmt.Println("----")
 	fmt.Println("list:  [", execName, "list ] output is list of your domains")
 	fmt.Println("add:   [", execName, "add domain_name new_rr_name rr_type rr_ip ] example for (test2.rzrbld.ru):", execName, "add rzrbld.ru test2 A 127.0.0.1")
-	fmt.Println("get:   [", execName, "get dommin_name ] example for (rzrbld.ru):", execName, "get rzrbld.ru output: rr for this domain is json format")
+	fmt.Println("get:   [", execName, "get domain_name ] example for (rzrbld.ru):", execName, "get rzrbld.ru output: rr for this domain is json format")
 	fmt.Println("rm:    [", execName, "rm domain_name rr_name ] example for (test2.rzrbld.ru):", execName, "rm rzrbld.ru test2")
 	os.Exit(1)
 }

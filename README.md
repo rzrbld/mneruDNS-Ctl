@@ -2,8 +2,8 @@
 
 mneruDNS-Ctl is a bash script or Golang program, you can use it for control your domain zone, that resolves on mne.ru NS servers. You be able to add\remove\list with A,CNAME and other types, from your console
 
-### Version
-0.0.1
+### Current version:
+0.0.2
 
 ### Tech
 
@@ -24,12 +24,38 @@ password string = "myS3cr#tP4$w0rd!"
 compile
 ```sh
 $ go version
-go version go1.5.1
+go version go1.6 windows/amd64
+$ go get .
 $ go build mnerudnsctl.go
 ```
 use
 ```sh
 $ mnerudnsctl help
+```
+### Examples
+list:
+```sh
+$ mnerudnsctl list
+example.com       Expires: 2016-09-12
+```
+add:
+```sh
+$ mnerudnsctl add example.com testrr A 127.0.0.3
+success
+```
+get:
+```sh
+$ mnerudnsctl get example.com
+ Content: ns1.mne.ru. noc.mne.ru 0000000000 11111 2222 3333333 44444 Type: SOA
+ Content: ns2.mne.ru Type: NS
+ Content: ns1.mne.ru Type: NS
+ Content: 192.168.1.101 Type: A
+testrr Content: 127.0.0.3 Type: A
+```
+rm
+```sh
+$ mnerudnsctl rm example.com testrr
+success
 ```
 
 
@@ -92,10 +118,10 @@ ok
 ```
 License
 ----
-The MIT License (MIT) 
+The MIT License (MIT)
 Copyright (c) 2012,2013,2014,2015
-Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions: 
-The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software. 
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
@@ -103,6 +129,3 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
    [curl]: <http://curl.haxx.se/>
    [jq]: <https://stedolan.github.io/jq/>
    [Golang]: <https://golang.org>
-
-
-
