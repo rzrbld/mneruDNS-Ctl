@@ -7,14 +7,57 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"github.com/parnurzeal/gorequest"
+	_ "io/ioutil"
 	_ "net/http"
 	_ "net/http/cookiejar"
 	_ "net/url"
 	"os"
-	// "log"
-	"github.com/parnurzeal/gorequest"
 )
+
+type DomainsResponse struct {
+	Dnszones   interface{} `json:"dnszones"`
+	DomainId   int64       `json:"domain_id"`
+	DomainName string      `json:"domain_name"`
+	Domains    []struct {
+		Additionalnotes    string `json:"additionalnotes"`
+		CreatedAt          string `json:"created_at"`
+		Dnsmanagement      string `json:"dnsmanagement"`
+		Domain             string `json:"domain"`
+		Donotrenew         string `json:"donotrenew"`
+		Emailforwarding    string `json:"emailforwarding"`
+		Expirydate         string `json:"expirydate"`
+		Firstpaymentamount string `json:"firstpaymentamount"`
+		Id                 string `json:"id"`
+		Idprotection       string `json:"idprotection"`
+		Nextduedate        string `json:"nextduedate"`
+		Nextinvoicedate    string `json:"nextinvoicedate"`
+		Orderid            string `json:"orderid"`
+		Paymentmethod      string `json:"paymentmethod"`
+		Promoid            string `json:"promoid"`
+		Recurringamount    string `json:"recurringamount"`
+		Registrar          string `json:"registrar"`
+		Registrationdate   string `json:"registrationdate"`
+		Registrationperiod string `json:"registrationperiod"`
+		Reminders          string `json:"reminders"`
+		Status             string `json:"status"`
+		Subscriptionid     string `json:"subscriptionid"`
+		Synced             string `json:"synced"`
+		Type               string `json:"type"`
+		UpdatedAt          string `json:"updated_at"`
+		Userid             string `json:"userid"`
+	} `json:"domains"`
+	Rrs []struct {
+		Content  string `json:"content"`
+		DomainId string `json:"domain_id"`
+		Id       string `json:"id"`
+		Name     string `json:"name"`
+		Prio     string `json:"prio"`
+		Ttl      string `json:"ttl"`
+		Type     string `json:"type"`
+	} `json:"rrs"`
+	Type1 string `json:"type1"`
+}
 
 const (
 	username string = "myemail@mydomain.ru"
@@ -34,44 +77,21 @@ func getDomain(domainName string) (domainId string) {
 		os.Exit(1)
 	}
 
-	var parsed map[string]interface{}
-	JSONdata := json.Unmarshal([]byte(contents), &parsed)
-	_ = JSONdata
-
-	domainsArr, ok := parsed["domains"].([]interface{})
-	if !ok {
+	response := DomainsResponse{}
+	if err := json.Unmarshal([]byte(contents), &response); err != nil {
 		panic("error while parcing domains")
 	}
-	/*dnszonesArr, ok := parsed["dnszones"].([]interface{})
-	if !ok {
-		panic("error while parcing dnszones")
-	}
-	*/
 
 	domainId = "all"
 
-	for _, domainObj := range domainsArr {
-		domainMap := domainObj.(map[string]interface{})
+	for _, domainObj := range response.Domains {
 		if domainName == "all" {
-			fmt.Println(domainMap["domain"], " Expires:", domainMap["expirydate"])
-		} else {
-			if domainMap["domain"].(string) == domainName {
-				domainId = domainMap["id"].(string)
-			}
+			fmt.Printf("%s\tExpires: %s\n", domainObj.Domain, domainObj.Expirydate)
+		} else if domainObj.Domain == domainName {
+			domainId = domainObj.Id
 		}
 	}
-	/*
-		for _, dnszonesObj := range dnszonesArr {
-			dnszonesMap := dnszonesObj.(map[string]interface{})
-			if domainName == "all" {
-				fmt.Println(dnszonesMap["domain"], " DNS Zone ")
-			} else {
-				if dnszonesMap["domain"].(string) == domainName {
-					domainId = dnszonesMap["id"].(string)
-				}
-			}
-		}
-	*/
+
 	return domainId
 }
 
@@ -85,36 +105,21 @@ func getDomainInfo(domainName string, rrName string) (domainId string, rrId stri
 		os.Exit(1)
 	}
 
-	var parsed map[string]interface{}
-	JSONdata := json.Unmarshal([]byte(contents), &parsed)
-	_ = JSONdata
-
-	// log.Println(parsed)
-
-	rrsArr, ok := parsed["rrs"].([]interface{})
-	if !ok {
-		fmt.Println("can't get [", domainName, "] Be sure that is your domain.")
-		//panic("error while getting domain")
+	response := DomainsResponse{}
+	if err := json.Unmarshal([]byte(contents), &response); err != nil {
+		panic("can't get [" + domainName + "] Be sure that is your domain.")
 	}
+
 	rrId = ""
-	for _, rrsObj := range rrsArr {
-		rrsMap := rrsObj.(map[string]interface{})
+	for _, rrObj := range response.Rrs {
 		if rrName == "" {
-			fmt.Println(rrsMap["name"], " Content:", rrsMap["content"], "type:", rrsMap["type"])
-		} else {
-			// log.Println(rrsMap["name"].(string),"==",rrName)
-
-			if rrsMap["name"].(string) == rrName {
-				// log.Println("true")
-				rrId = rrsMap["id"].(string)
-			}
-
+			fmt.Printf("%s Content: %s Type: %s\n", rrObj.Name, rrObj.Content, rrObj.Type)
+		} else if rrObj.Name == rrName {
+			rrId = rrObj.Id
 		}
 	}
-	if rrId == "" {
-		if rrName != "" {
-			fmt.Println("can't get [", domainName, " ", rrName, "].")
-		}
+	if rrId == "" && rrName != "" {
+		fmt.Printf("can't get [%s %s].", domainName, rrName)
 	}
 
 	return domainId, rrId
@@ -189,25 +194,17 @@ func main() {
 		domainName := os.Args[2]
 		rrName := os.Args[3]
 		domainId, rrId := getDomainInfo(domainName, rrName)
-		// log.Println("domainId:",domainId,"|rrid:",rrId)
 
 		var getURL string = fmt.Sprint(hostBase, "dns_manager.php?type=domain&domain_id=", domainId, "&action=del_rr&rr=", rrId, "&json=true")
-		response, _, err := client.Get(getURL).End()
+		_, contents, err := client.Get(getURL).End()
 		if err != nil {
 			fmt.Printf("%s", err)
 			os.Exit(1)
 		}
 
-		defer response.Body.Close()
-		contents, err := ioutil.ReadAll(response.Body)
-		if err != nil {
-			fmt.Printf("%s", err)
-			os.Exit(1)
-		} else {
-			fmt.Println("success")
-		}
+		fmt.Println("success")
 		var parsed map[string]interface{}
-		JSONdata := json.Unmarshal(contents, &parsed)
+		JSONdata := json.Unmarshal([]byte(contents), &parsed)
 		_ = JSONdata
 
 	default:
