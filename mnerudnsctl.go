@@ -1,6 +1,6 @@
 // dns ctl for mne.ru
 // License: MIT
-// Version: 0.0.1
+// Version: 0.0.2
 // Author: rzrbld (Aleksandr Petruhin) https://github.com/rzrbld razblade@gmail.com
 package main
 
@@ -8,10 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/parnurzeal/gorequest"
-	_ "io/ioutil"
-	_ "net/http"
-	_ "net/http/cookiejar"
-	_ "net/url"
 	"os"
 )
 
@@ -137,7 +133,8 @@ func usage() {
 }
 
 func main() {
-	if len(os.Args) < 1 {
+
+	if len(os.Args) < 2 {
 		usage()
 	}
 	action := os.Args[1]
@@ -196,17 +193,18 @@ func main() {
 		domainId, rrId := getDomainInfo(domainName, rrName)
 
 		var getURL string = fmt.Sprint(hostBase, "dns_manager.php?type=domain&domain_id=", domainId, "&action=del_rr&rr=", rrId, "&json=true")
-		_, contents, err := client.Get(getURL).End()
+		_, _, err := client.Get(getURL).End()
 		if err != nil {
 			fmt.Printf("%s", err)
 			os.Exit(1)
 		}
 
 		fmt.Println("success")
-		var parsed map[string]interface{}
-		JSONdata := json.Unmarshal([]byte(contents), &parsed)
-		_ = JSONdata
-
+		// Unused
+		/*
+			var parsed map[string]interface{}
+			_ := json.Unmarshal([]byte(contents), &parsed)
+		*/
 	default:
 		usage()
 	}
